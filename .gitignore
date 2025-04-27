@@ -1,0 +1,41 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Server Configuration
+PORT=5000
+
+# Database Configuration
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASSWORD=admin123
+DB_NAME=innovision_hub
+DB_PORT=5432
+
+# JWT Configuration
+JWT_SECRET=innovision_secret_key_2024
+JWT_EXPIRES_IN=24h
+
+# File Upload Configuration
+UPLOAD_PATH=uploads
