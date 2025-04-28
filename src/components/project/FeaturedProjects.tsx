@@ -17,26 +17,54 @@ const FeaturedProjects = () => {
 
   const fetchFeaturedProjects = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers: HeadersInit = {
-        'Accept': 'application/json'
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch(`${endpoints.projects.list}?status=approved`, {
-        headers,
-        credentials: 'include'
+      // First try to fetch without any token
+      console.log('Fetching featured projects without authentication...');
+      const publicResponse = await fetch(`${endpoints.projects.list}?status=approved`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch featured projects');
+      console.log('Public response status:', publicResponse.status);
+
+      if (!publicResponse.ok) {
+        // If public request fails, try with token
+        const token = localStorage.getItem('token');
+        if (token) {
+          console.log('Public request failed, trying with authentication...');
+          const authenticatedResponse = await fetch(`${endpoints.projects.list}?status=approved`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          console.log('Authenticated response status:', authenticatedResponse.status);
+
+          if (!authenticatedResponse.ok) {
+            throw new Error(`HTTP error! status: ${authenticatedResponse.status}`);
+          }
+
+          const data = await authenticatedResponse.json();
+          console.log('Authenticated projects data:', data);
+          
+          const recentProjects = data
+            .sort((a: Project, b: Project) => 
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )
+            .slice(0, 3);
+          
+          setFeaturedProjects(recentProjects);
+          return;
+        }
+        throw new Error(`HTTP error! status: ${publicResponse.status}`);
       }
 
-      const data = await response.json();
-      // Get the 3 most recent approved projects
+      const data = await publicResponse.json();
+      console.log('Public projects data:', data);
+
       const recentProjects = data
         .sort((a: Project, b: Project) => 
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -48,7 +76,7 @@ const FeaturedProjects = () => {
       console.error('Error fetching featured projects:', error);
       toast({
         title: "Error",
-        description: "Failed to load featured projects",
+        description: "Failed to load featured projects. Please try again later.",
         variant: "destructive",
       });
     } finally {

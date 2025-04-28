@@ -22,9 +22,17 @@ const LoginForm = () => {
     try {
       // First check if server is running
       try {
+        console.log('Testing server connection...');
+        console.log('Health check URL:', endpoints.health);
+        
         const healthCheck = await fetch(endpoints.health, {
           credentials: 'include'
         });
+        
+        console.log('Health check response:', healthCheck);
+        const healthData = await healthCheck.json();
+        console.log('Health check data:', healthData);
+
         if (!healthCheck.ok) {
           throw new Error('Server is not responding');
         }
@@ -38,6 +46,9 @@ const LoginForm = () => {
         return;
       }
 
+      console.log('Attempting login...');
+      console.log('Login URL:', endpoints.auth.login);
+      
       const res = await fetch(endpoints.auth.login, {
         method: "POST",
         headers: { 
@@ -48,8 +59,9 @@ const LoginForm = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      console.log('Login response status:', res.status);
       const data = await res.json();
-      console.log('Login response:', data);
+      console.log('Login response data:', data);
 
       if (!res.ok) {
         throw new Error(data.message || 'Login failed');
@@ -57,6 +69,7 @@ const LoginForm = () => {
 
       // Store token
       localStorage.setItem('token', data.token);
+      console.log('Token stored successfully');
 
       // Show success message
       toast({
