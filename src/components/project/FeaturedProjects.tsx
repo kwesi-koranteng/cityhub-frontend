@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import ProjectCard from "./ProjectCard";
 import { Project } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { endpoints } from "@/utils/api";
 
 const FeaturedProjects = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
@@ -25,7 +26,7 @@ const FeaturedProjects = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch('http://localhost:5000/api/projects?status=approved', {
+      const response = await fetch(`${endpoints.projects.list}?status=approved`, {
         headers,
         credentials: 'include'
       });
@@ -57,36 +58,40 @@ const FeaturedProjects = () => {
 
   if (loading) {
     return (
-      <section className="py-12 bg-muted/30">
+      <div className="py-12">
         <div className="container">
-          <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
-          <div className="text-center">
-            <p>Loading featured projects...</p>
+          <h2 className="text-2xl font-bold mb-6">Featured Projects</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
+  if (featuredProjects.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="py-12 bg-muted/30">
+    <section className="py-12">
       <div className="container">
-        <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
-        {featuredProjects.length === 0 ? (
-          <div className="text-center">
-            <p className="text-muted-foreground">No featured projects available.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        )}
-        <div className="text-center mt-8">
-          <Button asChild>
-            <Link to="/projects">View All Projects</Link>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Featured Projects</h2>
+          <Button asChild variant="outline">
+            <Link to="/projects">View All</Link>
           </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {featuredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
         </div>
       </div>
     </section>

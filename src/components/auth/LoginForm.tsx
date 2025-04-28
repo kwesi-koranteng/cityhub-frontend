@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { endpoints } from "@/utils/api";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ const LoginForm = () => {
     try {
       // First check if server is running
       try {
-        const healthCheck = await fetch('http://localhost:5000/api/health', {
+        const healthCheck = await fetch(endpoints.health, {
           credentials: 'include'
         });
         if (!healthCheck.ok) {
@@ -37,7 +38,7 @@ const LoginForm = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(endpoints.auth.login, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -50,36 +51,30 @@ const LoginForm = () => {
       const data = await res.json();
       console.log('Login response:', data);
 
-      if (res.ok && data.token) {
-        localStorage.setItem("token", data.token);
-        console.log('Token stored:', data.token);
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
 
-        toast({
-          title: "Logged in successfully",
-          description: adminLogin
-            ? "Welcome, Admin! Redirecting to dashboard."
-            : "Welcome back to CityHub",
-        });
+      // Store token
+      localStorage.setItem('token', data.token);
 
-        // Corrected Redirects
-        if (adminLogin) {
-          navigate("/admin");
-        } else {
-          navigate("/");
-        }
+      // Show success message
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+      });
+
+      // Redirect based on role
+      if (data.user.role === 'admin') {
+        navigate('/admin');
       } else {
-        console.error('Login failed:', data);
-        toast({
-          title: "Login failed",
-          description: data.message || "Invalid email or password",
-          variant: "destructive",
-        });
+        navigate('/projects');
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error('Login error:', error);
       toast({
-        title: "Login failed",
-        description: "An error occurred. Please try again later.",
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Login failed',
         variant: "destructive",
       });
     } finally {
@@ -88,81 +83,50 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="mx-auto max-w-md space-y-6">
-      <img
-        src="/images/AQcitylogo.png"
-        alt="Academic City Logo"
-        className="h-16 w-auto mb-4"
-      />
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">Login</h1>
-        {adminLogin ? (
-          <p className="text-muted-foreground font-medium">
-            Admin access – login to manage projects & approvals
-          </p>
-        ) : (
-          <p className="text-muted-foreground">
-            Enter your credentials to access your account
-          </p>
-        )}
+    <div className="w-full max-w-md mx-auto p-6">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
+        <p className="text-muted-foreground">
+          {adminLogin ? 'Admin Login' : 'Sign in to your account'}
+        </p>
       </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
-            placeholder="your@email.com"
             type="email"
+            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
+
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link
-              to="/forgot-password"
-              className="text-sm text-primary hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
+          <Label htmlFor="password">Password</Label>
           <Input
             id="password"
             type="password"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <Button
-          className="w-full gradient-bg"
-          type="submit"
-          disabled={isLoading}
-        >
-          {isLoading
-            ? (adminLogin ? "Logging in as Admin..." : "Logging in...")
-            : (adminLogin ? "Admin Log in" : "Log in")}
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Signing in..." : "Sign In"}
         </Button>
       </form>
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">
-          {adminLogin ? (
-            <>
-              Not an admin?{" "}
-              <Link to="/login" className="text-primary hover:underline">
-                Standard Login
-              </Link>
-            </>
-          ) : (
-            <>
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-primary hover:underline">
-                Sign up
-              </Link>
-            </>
-          )}
+
+      <div className="mt-4 text-center text-sm">
+        <p className="text-muted-foreground">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-primary hover:underline">
+            Sign up
+          </Link>
         </p>
       </div>
     </div>

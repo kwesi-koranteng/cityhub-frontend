@@ -39,3 +39,6 @@ JWT_EXPIRES_IN=24h
 
 # File Upload Configuration
 UPLOAD_PATH=uploads
+
+/node_modules
+.env
