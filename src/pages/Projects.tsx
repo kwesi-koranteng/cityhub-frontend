@@ -6,6 +6,7 @@ import ProjectCard from "@/components/project/ProjectCard";
 import FilterBar from "@/components/project/FilterBar";
 import { Filter, Project } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { endpoints } from "@/utils/api";
 
 const Projects = () => {
   const location = useLocation();
@@ -37,14 +38,9 @@ const Projects = () => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
         const headers: HeadersInit = {
           'Accept': 'application/json'
         };
-        
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
 
         // Build query string
         const queryParams = new URLSearchParams();
@@ -53,7 +49,7 @@ const Projects = () => {
         if (filters.academicYear.length > 0) queryParams.append('academicYear', filters.academicYear[0]);
         queryParams.append('status', 'approved');
 
-        const response = await fetch(`http://localhost:5000/api/projects?${queryParams.toString()}`, {
+        const response = await fetch(`${endpoints.projects.list}?${queryParams.toString()}`, {
           headers,
           credentials: 'include'
         });
