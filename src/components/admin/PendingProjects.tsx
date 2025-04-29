@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Project } from "@/types";
+import { endpoints } from "@/utils/api";
 
 const PendingProjects = () => {
   const [pendingProjects, setPendingProjects] = useState<Project[]>([]);
@@ -48,7 +49,13 @@ const PendingProjects = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:5000/api/projects?status=pending', {
+      console.log('Making request to:', `${endpoints.projects.list}?status=pending`);
+      console.log('Request headers:', {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      });
+
+      const response = await fetch(`${endpoints.projects.list}?status=pending`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -56,13 +63,22 @@ const PendingProjects = () => {
         credentials: 'include'
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
         throw new Error('Failed to fetch pending projects');
       }
 
       const data = await response.json();
+      console.log('Raw response data:', data);
       console.log('Fetched pending projects:', data);
+      console.log('Number of pending projects:', data.length);
+      console.log('First project (if any):', data[0]);
       console.log('First project author info:', data[0]?.author);
+      
       setPendingProjects(data);
     } catch (error) {
       console.error('Error fetching pending projects:', error);
@@ -83,7 +99,7 @@ const PendingProjects = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`http://localhost:5000/api/projects/${id}/status`, {
+      const response = await fetch(`${endpoints.projects.update(id)}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -122,7 +138,7 @@ const PendingProjects = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`http://localhost:5000/api/projects/${id}/status`, {
+      const response = await fetch(`${endpoints.projects.update(id)}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -189,7 +205,7 @@ const PendingProjects = () => {
                   <Badge variant="outline">{project.category}</Badge>
                 </TableCell>
                 <TableCell>
-                  {formatDate(project.created_at)}
+                  {formatDate(project.createdAt)}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button

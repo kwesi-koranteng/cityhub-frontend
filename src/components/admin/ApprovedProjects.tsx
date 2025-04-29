@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Project } from "@/types";
+import { endpoints } from "@/utils/api";
 
 const ApprovedProjects = () => {
   const [approvedProjects, setApprovedProjects] = useState<Project[]>([]);
@@ -48,7 +49,7 @@ const ApprovedProjects = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:5000/api/projects?status=approved', {
+      const response = await fetch(`${endpoints.projects.list}?status=approved`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -82,7 +83,7 @@ const ApprovedProjects = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`http://localhost:5000/api/projects/${id}/status`, {
+      const response = await fetch(`${endpoints.projects.update(id)}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -149,7 +150,7 @@ const ApprovedProjects = () => {
                   <Badge variant="outline">{project.category}</Badge>
                 </TableCell>
                 <TableCell>
-                  {formatDate(project.created_at)}
+                  {formatDate(project.createdAt)}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button

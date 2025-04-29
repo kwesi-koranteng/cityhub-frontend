@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
+import { endpoints } from '@/utils/api';
 
 interface ProjectFormData {
   title: string;
@@ -113,25 +114,34 @@ const ProjectUploadForm: React.FC = () => {
         throw new Error('Please login to submit a project');
       }
 
+      // Validate required fields
+      if (!formData.title || !formData.description || !formData.category || !formData.academicYear) {
+        throw new Error('Please fill in all required fields');
+      }
+
       // Create FormData object
       const formDataToSend = new FormData();
       
       // Add text fields
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('category', formData.category);
-      formDataToSend.append('academicYear', formData.academicYear);
+      formDataToSend.append('title', formData.title.trim());
+      formDataToSend.append('description', formData.description.trim());
+      formDataToSend.append('category', formData.category.trim());
+      formDataToSend.append('academicYear', formData.academicYear.trim());
       formDataToSend.append('tags', JSON.stringify(formData.tags));
-      formDataToSend.append('videoUrl', formData.videoUrl);
+      
+      // Add optional fields if they exist
+      if (formData.videoUrl && formData.videoUrl.trim() !== '') {
+        formDataToSend.append('videoUrl', formData.videoUrl.trim());
+      }
 
-      // Add thumbnail
-      if (formData.thumbnail && formData.thumbnail.trim() !== "") {
-        formDataToSend.append('thumbnail', formData.thumbnail);
+      // Add thumbnail if provided
+      if (formData.thumbnail && formData.thumbnail.trim() !== '') {
+        formDataToSend.append('thumbnail', formData.thumbnail.trim());
       }
 
       // Add project files
-      formData.projectFiles.forEach((file, index) => {
-        formDataToSend.append(`projectFiles`, file);
+      formData.projectFiles.forEach((file) => {
+        formDataToSend.append('projectFiles', file);
       });
 
       console.log('Submitting project with data:', {
@@ -142,11 +152,12 @@ const ProjectUploadForm: React.FC = () => {
         tags: formData.tags,
         videoUrl: formData.videoUrl,
         hasThumbnail: !!formData.thumbnail,
-        projectFilesCount: formData.projectFiles.length
+        projectFilesCount: formData.projectFiles.length,
+        token: token ? 'Token present' : 'No token'
       });
 
       // Make the request
-      const response = await fetch('http://localhost:5000/api/projects', {
+      const response = await fetch(endpoints.projects.create, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -155,10 +166,29 @@ const ProjectUploadForm: React.FC = () => {
       });
 
       const data = await response.json();
-      console.log('Upload response:', data);
+      console.log('Upload response:', {
+        status: response.status,
+        statusText: response.statusText,
+        data: data
+      });
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'Failed to upload project');
+        console.error('Server response error:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: data
+        });
+        
+        // Construct a more detailed error message
+        let errorMessage = data.message || 'Failed to upload project';
+        if (data.error) {
+          errorMessage += `: ${data.error}`;
+        }
+        if (data.detail) {
+          errorMessage += ` (${data.detail})`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       // Success
@@ -168,7 +198,11 @@ const ProjectUploadForm: React.FC = () => {
       });
       navigate('/projects');
     } catch (err) {
-      console.error('Upload error:', err);
+      console.error('Upload error:', {
+        error: err,
+        message: err.message,
+        stack: err.stack
+      });
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
       toast({

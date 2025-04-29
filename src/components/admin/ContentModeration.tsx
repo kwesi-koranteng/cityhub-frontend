@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Project } from "@/types";
+import { endpoints } from "@/utils/api";
 import {
   Dialog,
   DialogContent,
@@ -43,7 +44,7 @@ const ContentModeration = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:5000/api/projects', {
+      const response = await fetch(endpoints.projects.list, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -83,7 +84,7 @@ const ContentModeration = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`http://localhost:5000/api/projects/${selectedProject.id}`, {
+      const response = await fetch(endpoints.projects.update(selectedProject.id), {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -115,7 +116,7 @@ const ContentModeration = () => {
     }
   };
 
-  const handleRemove = async (projectId: number) => {
+  const handleRemove = async (projectId: string) => {
     if (!confirm('Are you sure you want to remove this project?')) return;
 
     try {
@@ -124,7 +125,7 @@ const ContentModeration = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`http://localhost:5000/api/projects/${projectId}`, {
+      const response = await fetch(endpoints.projects.delete(projectId), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -209,12 +210,12 @@ const ContentModeration = () => {
                     <Badge variant="outline">{project.category}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={project.status === 'approved' ? 'success' : 'warning'}>
+                    <Badge variant={project.status === 'approved' ? 'default' : 'destructive'}>
                       {project.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {formatDate(project.created_at)}
+                    {formatDate(project.createdAt)}
                   </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
@@ -227,7 +228,7 @@ const ContentModeration = () => {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleRemove(project.id)}
+                      onClick={() => handleRemove(project.id.toString())}
                     >
                       Remove
                     </Button>

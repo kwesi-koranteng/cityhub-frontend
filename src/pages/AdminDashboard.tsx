@@ -7,6 +7,7 @@ import ApprovedProjects from "@/components/admin/ApprovedProjects";
 import ContentModeration from "@/components/admin/ContentModeration";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { endpoints } from "@/utils/api";
 
 interface DashboardStats {
   totalProjects: number;
@@ -37,7 +38,7 @@ const AdminDashboard = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch('http://localhost:5000/api/projects/stats', {
+      const response = await fetch(endpoints.projects.stats, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -71,7 +72,7 @@ const AdminDashboard = () => {
 
       console.log('Checking admin status with token:', token);
 
-      const response = await fetch('http://localhost:5000/api/auth/me', {
+      const response = await fetch(endpoints.auth.me, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'

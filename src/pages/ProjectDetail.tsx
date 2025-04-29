@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Project, Comment } from "@/types";
+import { endpoints } from "@/utils/api";
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -33,7 +34,7 @@ const ProjectDetail = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      const response = await fetch(endpoints.projects.get(id), {
         headers,
         credentials: 'include'
       });
@@ -83,7 +84,7 @@ const ProjectDetail = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/projects/${id}/comments`, {
+      const response = await fetch(endpoints.projects.comments(id), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

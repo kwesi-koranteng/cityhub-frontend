@@ -11,12 +11,15 @@ export interface Project {
   title: string;
   description: string;
   thumbnail: string;
-  author: {
+  author?: {
     id: string;
     name: string;
   };
+  author_name?: string;
+  author_email?: string;
   tags: string[];
   academicYear: string;
+  academic_year?: string;
   category: string;
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;

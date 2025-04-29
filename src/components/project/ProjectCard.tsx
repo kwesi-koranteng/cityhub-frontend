@@ -43,8 +43,12 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             )}
           </div>
           <div className="flex items-center justify-between w-full text-xs text-muted-foreground">
-            <span>{project.author?.name || 'Unknown Author'}</span>
-            <span>{project.academicYear}</span>
+            <span className="text-sm text-gray-600">
+              {project.author_name || project.author?.name || 'Unknown Author'}
+            </span>
+            <span className="text-sm text-gray-600">
+              {project.academic_year || project.academicYear}
+            </span>
           </div>
         </CardFooter>
       </Card>
