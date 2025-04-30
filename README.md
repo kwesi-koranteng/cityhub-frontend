@@ -2,14 +2,43 @@
 
 A React-based frontend for the CityHub project management platform, built with Vite and TypeScript.
 
-## Features
+## Demonstration
 
-- User authentication (login/signup)
-- Project submission and management
-- Project browsing with filters
-- Project details with comments
-- Admin dashboard
-- Responsive design
+> These screenshots and videos demonstrate the core features of the CityHub Frontend. Useful if the website is not running.
+
+### 0. Home Page
+![Home Page](public/images/Homepage.png)
+![Home Page 2](public/images/Homepage2.png)
+![Home Page 3](public/images/Homepage3.png)
+![About](public/images/About.png)
+
+### 1. Login & Signup
+![Login](public/images/Login.png) 
+![SignUp](public/images/Signup.png) 
+![API Login1](public/images/Login1.png) 
+![API Login2](public/images/Login2.png) 
+
+### 2. Project Submission
+![Submit Project](public/images/Submit1.png)
+![Submit Project 2](public/images/Submit2.png)
+![Submit Project 3](public/images/Submit3.png)
+![Submit Project 4](public/images/Submit4.png)
+![Submit Project 5](public/images/Submit5.png)
+
+### 3. Project Browsing & Filters
+![Browse Projects](public/images/Browse1.png)
+
+### 4. Project Details & Comments
+![Project Details](public/images/Details1.png)
+![Project Details](public/images/Details2.png)
+![Project Details](public/images/Details3.png)
+
+### 5. Admin Dashboard & Content Moderation
+![Admin API Login](public/images/Admin1.png)
+![Pending Projects](public/images/Admin2.png)
+![Approved Projects](public/images/Admin3.png)
+![Content Moderation](public/images/Admin4.png)
+
 
 
 ## Prerequisites
