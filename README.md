@@ -11,17 +11,19 @@ A React-based frontend for the CityHub project management platform, built with V
 - Admin dashboard
 - Responsive design
 
+
 ## Prerequisites
 
 - Node.js (v16 or higher)
 - npm or yarn
 - Git
 
+
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/cityhub-frontend.git
+git clone https://github.com/kwesi-koranteng/cityhub-frontend.git
 cd cityhub-frontend
 ```
 
@@ -46,33 +48,8 @@ yarn dev
 
 The application will be available at `http://localhost:5173`
 
-## Building for Production
 
-1. Build the project:
-```bash
-npm run build
-# or
-yarn build
-```
 
-2. Preview the production build:
-```bash
-npm run preview
-# or
-yarn preview
-```
-
-## Deployment
-
-### Deploying to Render
-
-1. Create a new Web Service on Render
-2. Connect your GitHub repository
-3. Configure the build settings:
-   - Build Command: `npm install && npm run build`
-   - Start Command: `npm run preview`
-4. Add environment variables:
-   - `VITE_API_URL`: Your backend API URL
 
 ## Project Structure
 
@@ -89,20 +66,8 @@ src/
 ## Technologies Used
 
 - React
-- TypeScript
 - Vite
-- Tailwind CSS
+- CSS
 - React Router
-- Axios
 
-## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
